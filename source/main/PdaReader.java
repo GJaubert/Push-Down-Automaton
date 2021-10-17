@@ -22,27 +22,26 @@ public class PdaReader {
       else {
         throw new Exception("File not found");
       }
-      scan_ = removeComments(scan_);
-      scan_ = readStates(scan_);
+      removeComments();
+      readStates();
     } catch(Exception error) {
       System.out.println(error);
     }
   }
 
-  private Scanner removeComments(Scanner scan) {
+  private void removeComments() {
     while (scan_.hasNextLine()) {
       currentLine = scan_.nextLine(); 
       if ((currentLine.charAt(0) == '#')) {
         //System.out.println(currentLine);
         continue;
-      } else {
-        return scan;
       }
+      else
+        break;
     }
-    return scan;
   }
 
-  private Scanner readStates(Scanner scan) {
+  private void readStates() {
     if (currentLine.length() != 0) {
       String[] states = currentLine.split(" ");
       for (int i = 0; i < states.length; i++) {
@@ -52,6 +51,5 @@ public class PdaReader {
     } else {
       System.out.println("No States found");
     }
-    return scan;
   }
 }
