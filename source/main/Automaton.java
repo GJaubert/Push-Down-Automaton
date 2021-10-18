@@ -33,30 +33,24 @@ public class Automaton {
     System.out.println(stackAlphabet.getSymbols().size());
 
     initialState = new State(inputInitialState, false);
-    System.out.println(initialState.hashCode());
+    System.out.println(initialState.getName());
 
     initialStackSymbol = new Symbol(inputInitialStackSymbol);
     System.out.println(initialStackSymbol.value);
 
     transitions = new Delta(inputTransitions);
+
+    //Probando si funciona
     Vector<Symbol> keySymbols = new Vector<Symbol>();
     keySymbols.add(new Symbol("a"));
-    keySymbols.add(initialStackSymbol);
-    Map.Entry<State, Vector<Symbol>> mapEntry = new AbstractMap.SimpleEntry<State, Vector<Symbol>>(initialState, keySymbols);
+    keySymbols.add(new Symbol("A"));
+    Map.Entry<State, Vector<Symbol>> testMapEntry = new AbstractMap.SimpleEntry<State, Vector<Symbol>>(initialState, keySymbols);
     //System.out.println(transitions.getTransitionsMap().get(mapEntry).iterator().next());
 
-    Iterator<Map.Entry<State, Vector<Symbol>>> iter = transitions.getTransitionsMap().get(mapEntry).iterator();
+    Iterator<Map.Entry<State, Vector<Symbol>>> iter = transitions.getTransitionsMap().get(testMapEntry).iterator();
     while (iter.hasNext()) {
       Map.Entry<State, Vector<Symbol>> tmpEntry = iter.next();
-      System.out.println(tmpEntry.getKey().getName());
+      System.out.println(tmpEntry.getKey().getName() + " " + tmpEntry.getValue().get(0).value + " " + tmpEntry.getValue().get(1).value);
     }
-    //System.out.println(initialStackSymbol.value);
-    //Map<State, Symbol> testMap = new HashMap<State, Symbol>();
-    // State state1 = new State("q1", false);
-    // State state2 = new State("q1", false);
-    // testMap.put(state1, new Symbol("a"));
-    // System.out.println(testMap.get(state2));
-    // System.out.println(state1.hashCode() + " " + state2.hashCode());
-    //transitions.getTransitionsMap().forEach((key, value) -> System.out.println(key + " : " + value));
   }
 }
