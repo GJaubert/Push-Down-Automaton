@@ -3,13 +3,13 @@ package source.main;
 import java.util.Set;
 
 public class Alphabet {
-  private Set<Character> symbols;
+  private Set<String> symbols;
 
-  Alphabet(Set<Character> inputSymbols) {
+  Alphabet(Set<String> inputSymbols) {
     symbols = inputSymbols;
   }
   
-  public Set<Character> getSymbols() {
+  public Set<String> getSymbols() {
     return symbols;
   }
 }
