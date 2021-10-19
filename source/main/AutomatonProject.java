@@ -9,5 +9,6 @@ public class AutomatonProject {
     Automaton automaton = new Automaton(reader.getStates(), reader.getAlphabet(), 
                                         reader.getStackAlphabet(), reader.getinitialState(),
                                         reader.getStartingStackSymbol(), reader.getTransitions());
+    automaton.checkString("ab");
   }
 }
