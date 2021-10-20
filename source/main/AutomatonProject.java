@@ -5,10 +5,10 @@ import source.main.PdaReader;
 
 public class AutomatonProject {
   public static void main(String args[]) {
-    PdaReader reader = new PdaReader("../resources/APv.txt");
+    PdaReader reader = new PdaReader("../resources/APv-2.txt");
     Automaton automaton = new Automaton(reader.getStates(), reader.getAlphabet(), 
                                         reader.getStackAlphabet(), reader.getinitialState(),
                                         reader.getStartingStackSymbol(), reader.getTransitions());
-    automaton.checkString("aaaaaaaaaabbbbbbbbbb");
+    automaton.checkString("0110");
   }
 }

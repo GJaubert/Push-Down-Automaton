@@ -20,14 +20,14 @@ public class Automaton {
   private Delta transitions;
   private Boolean stringAccepted;
   private Stack<Symbol> stack;
-  private Vector<Symbol> stackElements;
+  private LinkedList<Symbol> stackElements;
 
   Automaton(Set<String> inputStates, Set<String> inputAlphabet, 
             Set<String> inputStackAlphabet, String inputInitialState, 
             String inputInitialStackSymbol, Vector<Vector<String>> inputTransitions) {
         
     stack = new Stack<Symbol>();
-    stackElements = new Vector<Symbol>();
+    stackElements = new LinkedList<Symbol>();
     states = new HashSet<State>();
     stringAccepted = false;
 
@@ -50,6 +50,7 @@ public class Automaton {
     initialStackSymbol = new Symbol(inputInitialStackSymbol);
     //System.out.println(initialStackSymbol.value);
     stack.push(initialStackSymbol);
+    stackElements.addFirst(stack.peek());
     
     transitions = new Delta(inputTransitions);
     
@@ -89,9 +90,11 @@ public class Automaton {
     }
     //aqui debo hacer una foto de la pila;
     Stack<Symbol> stackSnapShot = stack;
+    LinkedList<Symbol> stackElementsCopy = stackElements;
     //System.out.println(possibleTransitions);
     for (int i = 0; i < possibleTransitions.size(); i++) {
      if (i > 0) stack = stackSnapShot;
+     printTransition(inputString, possibleTransitions.get(i), currentState);
      executeTransition(inputString, possibleTransitions.get(i));
      if (stringAccepted == true) break;
     }
@@ -135,10 +138,27 @@ public class Automaton {
       stackSymbols.remove(stackSymbols.size() - 1);
     }
     stack.pop();
+    stackElements.remove();
     for (int i = stackSymbols.size() - 1; i >= 0; i--) {
       if (stackSymbols.get(i).value.equals(".")) continue;
       stack.push(stackSymbols.get(i));
+      stackElements.addFirst(stack.peek());
+      //System.out.println(stackSymbols.size());
     }
     transit(newString, transition.getKey());
+  }
+
+  public void printTransition(String inputString, Map.Entry<State, Vector<Symbol>> transition, State currentState) {
+    if (transition.getValue().get(transition.getValue().size() - 1).value == "&") currentState = new State(".", false);
+    System.out.print(currentState.getName() + " " + inputString + " ");
+    for (int i = 0; i < stackElements.size(); i++) {
+      System.out.print(stackElements.get(i).value);
+    }
+    System.out.print(" " + transition.getKey().getName() + " ");
+    for (int i = 0; i < transition.getValue().size(); i++) {
+      if (transition.getValue().get(i).value.equals("&")) continue;
+      System.out.print(transition.getValue().get(i).value);
+    }
+    System.out.print("\n");
   }
 }

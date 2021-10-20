@@ -56,6 +56,7 @@ public class PdaReader {
 
   private void readStates() {
     if (currentLine.length() != 0) {
+      //System.out.println(currentLine);
       String[] states = currentLine.split(" ");
       for (int i = 0; i < states.length; i++) {
         inputStates.add(states[i]);
