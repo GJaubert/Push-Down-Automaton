@@ -21,8 +21,8 @@ public class Symbol {
     if(obj == null || obj.getClass()!= this.getClass())
       return false;
 
-    Symbol state = (Symbol) obj;
+    Symbol symbol = (Symbol) obj;
 
-    return (state.value.equals(this.value));
+    return (symbol.value.equals(this.value));
   }
 }

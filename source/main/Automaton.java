@@ -16,7 +16,7 @@ public class Automaton {
   private State initialState;
   private Symbol initialStackSymbol;
   private State finalState;
-  private State currentState;
+  //private State currentState;
   private Delta transitions;
   private Boolean stringAccepted;
   private Stack<Symbol> stack;
@@ -35,20 +35,20 @@ public class Automaton {
       State tmpState = new State(element, false);
       states.add(tmpState);
     }
-    System.out.println(states.size());
+    //System.out.println(states.size());
     
     alphabet = new Alphabet(inputAlphabet);
-    System.out.println(alphabet.getSymbols().size());
+    //System.out.println(alphabet.getSymbols().size());
     
     stackAlphabet = new Alphabet(inputStackAlphabet);
-    System.out.println(stackAlphabet.getSymbols().size());
+    //System.out.println(stackAlphabet.getSymbols().size());
     
     initialState = new State(inputInitialState, false);
-    currentState = initialState;
-    System.out.println(initialState.getName());
+    //currentState = initialState;
+    //System.out.println(initialState.getName());
     
     initialStackSymbol = new Symbol(inputInitialStackSymbol);
-    System.out.println(initialStackSymbol.value);
+    //System.out.println(initialStackSymbol.value);
     stack.push(initialStackSymbol);
     
     transitions = new Delta(inputTransitions);
@@ -60,15 +60,16 @@ public class Automaton {
     Map.Entry<State, Vector<Symbol>> testMapEntry = new AbstractMap.SimpleEntry<State, Vector<Symbol>>(initialState, keySymbols);
     //System.out.println(transitions.getTransitionsMap().get(mapEntry).iterator().next());
 
-    Iterator<Map.Entry<State, Vector<Symbol>>> iter = transitions.getTransitionsMap().get(testMapEntry).iterator();
-    while (iter.hasNext()) {
-      Map.Entry<State, Vector<Symbol>> tmpEntry = iter.next();
-      System.out.println(tmpEntry.getKey().getName() + " " + tmpEntry.getValue().get(0).value + " " + tmpEntry.getValue().get(1).value);
-    }
+    // Iterator<Map.Entry<State, Vector<Symbol>>> iter = transitions.getTransitionsMap().get(testMapEntry).iterator();
+    // while (iter.hasNext()) {
+    //   Map.Entry<State, Vector<Symbol>> tmpEntry = iter.next();
+    //   System.out.println("hola");
+    //   System.out.println(tmpEntry.getKey().getName() + " " + tmpEntry.getValue().get(0).value + " " + tmpEntry.getValue().get(1).value);
+    // }
   }
 
   public void checkString(String inputString) {
-    transit(inputString);
+    transit(inputString, initialState);
     if (stringAccepted) {
       System.out.println("Cadena aceptada");
     } else {
@@ -76,43 +77,68 @@ public class Automaton {
     }
   }
 
-  public void transit(String inputString) {
+  public void transit(String inputString, State currentState) {
     if (stack.empty()) {
-      stringAccepted = true;
+      if (inputString.length() == 0)
+        stringAccepted = true;
       return;
     }
-    Vector<Map.Entry<State, Vector<Symbol>>> possibleTransitions = findTransitions(inputString);
+    Vector<Map.Entry<State, Vector<Symbol>>> possibleTransitions = findTransitions(inputString, currentState);
     if (possibleTransitions.size() == 0) {
-      stringAccepted = false;
       return;
     }
     //aqui debo hacer una foto de la pila;
     Stack<Symbol> stackSnapShot = stack;
-    System.out.println(possibleTransitions);
-    //for (int i = 0; i < possibleTransitions.size(); i++) {
-    //  stack = stackSnapShop;
-    //  executeTransitions(inputString, possibleTransitions);
-    //}
+    //System.out.println(possibleTransitions);
+    for (int i = 0; i < possibleTransitions.size(); i++) {
+     if (i > 0) stack = stackSnapShot;
+     executeTransition(inputString, possibleTransitions.get(i));
+     if (stringAccepted == true) break;
+    }
   }
 
   //En este método falta que busque las entradas para .
-  public Vector<Map.Entry<State, Vector<Symbol>>> findTransitions(String inputString) {
+  public Vector<Map.Entry<State, Vector<Symbol>>> findTransitions(String inputString, State currentState) {
     Vector<Map.Entry<State, Vector<Symbol>>> possibleTransitions = new Vector<Map.Entry<State, Vector<Symbol>>>();
     Vector<Symbol> inputSymbols = new Vector<Symbol>();
     inputSymbols.add(new Symbol(String.valueOf(inputString.charAt(0))));    //Primer caracter de la cadena
     inputSymbols.add(stack.peek());   //Primer elemento de la pila
     Map.Entry<State, Vector<Symbol>> deltaMapKey = new AbstractMap.SimpleEntry<State, Vector<Symbol>>(currentState, inputSymbols);
     Set<Map.Entry<State, Vector<Symbol>>> destinationsSet = transitions.getTransitionsMap().get(deltaMapKey);
+    inputSymbols.set(0, new Symbol("."));
+    Map.Entry<State, Vector<Symbol>> epsilonMapKey = new AbstractMap.SimpleEntry<State, Vector<Symbol>>(currentState, inputSymbols);
+    Set<Map.Entry<State, Vector<Symbol>>> epsilonSet = transitions.getTransitionsMap().get(epsilonMapKey);
     if (destinationsSet != null) {
       Iterator<Map.Entry<State, Vector<Symbol>>> itr = destinationsSet.iterator();
       while (itr.hasNext()) {
         possibleTransitions.add(itr.next());
       }
     }
+    if (epsilonSet != null) {
+      Iterator<Map.Entry<State, Vector<Symbol>>> itr = epsilonSet.iterator();
+      while (itr.hasNext()) {
+        Map.Entry<State, Vector<Symbol>> tmp = itr.next();
+        tmp.getValue().add(new Symbol("&"));    //Caracter reservado para saber si es una transicion que no consume caracter
+        possibleTransitions.add(tmp);
+      }
+    }
     return possibleTransitions;
   }
 
-  public void executeTransitions(String inputString, Vector<Map.Entry<State, Vector<Symbol>>> possibleTransitions) {
-
+  public void executeTransition(String inputString, Map.Entry<State, Vector<Symbol>> transition) {
+    //falta manejar la pila
+    String newString = inputString;
+    Vector<Symbol> stackSymbols = transition.getValue();
+    if (stackSymbols.get(stackSymbols.size() - 1).value != "&") {
+      newString = newString.substring(1);
+    } else {
+      stackSymbols.remove(stackSymbols.size() - 1);
+    }
+    stack.pop();
+    for (int i = stackSymbols.size() - 1; i >= 0; i--) {
+      if (stackSymbols.get(i).value.equals(".")) continue;
+      stack.push(stackSymbols.get(i));
+    }
+    transit(newString, transition.getKey());
   }
 }
