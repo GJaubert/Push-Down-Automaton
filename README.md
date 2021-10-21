@@ -1,4 +1,4 @@
-Práctica 1 - Autómata de Pila
+## Práctica 1 - Autómata de Pila
 
 Gabriel García Jaubert - alu0101240374
 
