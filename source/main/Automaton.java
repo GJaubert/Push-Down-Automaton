@@ -15,14 +15,16 @@ public class Automaton {
   private Delta transitions;
   private Boolean stringAccepted;
   private Stack<Symbol> stack;
+  private Boolean printTrace;
 
   Automaton(Set<String> inputStates, Set<String> inputAlphabet, 
             Set<String> inputStackAlphabet, String inputInitialState, 
-            String inputInitialStackSymbol, Vector<Vector<String>> inputTransitions) {
+            String inputInitialStackSymbol, Vector<Vector<String>> inputTransitions, Boolean traceMode) {
         
     stack = new Stack<Symbol>();
     states = new HashSet<State>();
     stringAccepted = false;
+    printTrace = traceMode;
 
     for (String element: inputStates) {
       State tmpState = new State(element, false);
@@ -45,7 +47,7 @@ public class Automaton {
 
   //  Funcion que dada una cadena comprueba si es aceptada por el lenguaje que reconoce el autómata 
   public void checkString(String inputString) {
-    printTitle();
+    if (printTrace) printTitle();
     stringAccepted = false;
     stack.removeAllElements();
     stack.push(initialStackSymbol);
@@ -76,7 +78,7 @@ public class Automaton {
     for (int i = 0; i < possibleTransitions.size(); i++) {
       stack.removeAllElements();
       stack.addAll(stackSnapShot);
-      printTransition(inputString, possibleTransitions.get(i), currentState, stackSnapShot);
+      if (printTrace) printTransition(inputString, possibleTransitions.get(i), currentState, stackSnapShot);
       executeTransition(inputString, possibleTransitions.get(i));
       if (stringAccepted == true) break;
     }
