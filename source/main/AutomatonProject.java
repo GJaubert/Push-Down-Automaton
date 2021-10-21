@@ -13,7 +13,7 @@ public class AutomatonProject {
                                           reader.getStackAlphabet(), reader.getinitialState(),
                                           reader.getStartingStackSymbol(), reader.getTransitions());
       Scanner userInput = new Scanner(System.in); 
-      System.out.println("Introduzca una cadena a comprobar: ");                                
+      System.out.println("Introduzca una cadena a comprobar (para terminar escriba \"salir\"): ");                                
       while (true) {
         String input = userInput.nextLine();
         if (input.equals("salir")) break;
