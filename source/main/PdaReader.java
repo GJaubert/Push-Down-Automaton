@@ -46,7 +46,6 @@ public class PdaReader {
     while (scan_.hasNextLine()) {
       currentLine = scan_.nextLine(); 
       if ((currentLine.charAt(0) == '#')) {
-        //System.out.println(currentLine);
         continue;
       }
       else
@@ -56,11 +55,9 @@ public class PdaReader {
 
   private void readStates() {
     if (currentLine.length() != 0) {
-      //System.out.println(currentLine);
       String[] states = currentLine.split(" ");
       for (int i = 0; i < states.length; i++) {
         inputStates.add(states[i]);
-        //System.out.println(states[i]);
       }
     } else {
       System.out.println("No States found");
@@ -73,7 +70,6 @@ public class PdaReader {
       String[] alphabetSymbols = currentLine.split(" ");
       for (int i = 0; i < alphabetSymbols.length; i++) {
         inputAlphabet.add(alphabetSymbols[i]);
-        //System.out.println(alphabetSymbols[i]);
       }
     } else {
       System.out.println("No Alphabet found");
@@ -86,7 +82,6 @@ public class PdaReader {
       String[] stackAlphabetSymbols = currentLine.split(" ");
       for (int i = 0; i < stackAlphabetSymbols.length; i++) {
         inputStackAlphabet.add(stackAlphabetSymbols[i]);
-        //System.out.println(stackAlphabetSymbols[i]);
       }
     } else {
       System.out.println("No Stack Alphabet found");
@@ -97,7 +92,6 @@ public class PdaReader {
     currentLine = scan_.nextLine();
     if (currentLine.length() != 0) {
       initialState = currentLine;
-      //System.out.println(initialState);
     } else {
       System.out.println("No Starting State found");
     }
@@ -107,7 +101,6 @@ public class PdaReader {
     currentLine = scan_.nextLine();
     if (currentLine.length() != 0) {
       startingStackSymbol = currentLine;
-      //System.out.println(startingStackSymbol);
     } else {
       System.out.println("No Starting Stack Symbol found");
     }
@@ -130,9 +123,6 @@ public class PdaReader {
       Vector<String> currentTransition = new Vector<String>();
       Collections.addAll(currentTransition, splittedTransition);
       inputTransitions.add(currentTransition);
-      // for (int j = 0; j < currentTransition.size(); j++) {
-      //   System.out.println(currentTransition.get(j));
-      // }
     }
   }
 

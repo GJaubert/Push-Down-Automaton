@@ -11,8 +11,7 @@ public class Automaton {
   private Alphabet stackAlphabet;
   private State initialState;
   private Symbol initialStackSymbol;
-  private State finalState;
-  //private State currentState;
+  private Set<State> finalState;
   private Delta transitions;
   private Boolean stringAccepted;
   private Stack<Symbol> stack;
@@ -29,46 +28,22 @@ public class Automaton {
       State tmpState = new State(element, false);
       states.add(tmpState);
     }
-    //System.out.println(states.size());
     
     alphabet = new Alphabet(inputAlphabet);
-    //System.out.println(alphabet.getSymbols().size());
     
     stackAlphabet = new Alphabet(inputStackAlphabet);
-    //System.out.println(stackAlphabet.getSymbols().size());
     
     initialState = new State(inputInitialState, false);
-    //currentState = initialState;
-    //System.out.println(initialState.getName());
     
     initialStackSymbol = new Symbol(inputInitialStackSymbol);
-    //System.out.println(initialStackSymbol.value);
-    //stackElements.addFirst(stack.peek());
     
     transitions = new Delta(inputTransitions);
 
-  //  try {
-      Boolean isValid = validateAutomaton();
-      if (!isValid) throw new RuntimeException("Automaton not valid");
-   // } catch (Exception error) {
-      //System.out.println(error);
-  //  }
-    
-    //Probando si funciona
-    Vector<Symbol> keySymbols = new Vector<Symbol>();
-    keySymbols.add(new Symbol("a"));
-    keySymbols.add(new Symbol("A"));
-    //Map.Entry<State, Vector<Symbol>> testMapEntry = new AbstractMap.SimpleEntry<State, Vector<Symbol>>(initialState, keySymbols);
-    //System.out.println(transitions.getTransitionsMap().get(mapEntry).iterator().next());
-
-    // Iterator<Map.Entry<State, Vector<Symbol>>> iter = transitions.getTransitionsMap().get(testMapEntry).iterator();
-    // while (iter.hasNext()) {
-    //   Map.Entry<State, Vector<Symbol>> tmpEntry = iter.next();
-    //   System.out.println("hola");
-    //   System.out.println(tmpEntry.getKey().getName() + " " + tmpEntry.getValue().get(0).value + " " + tmpEntry.getValue().get(1).value);
-    // }
+    Boolean isValid = validateAutomaton();
+    if (!isValid) throw new RuntimeException("Automaton not valid");
   }
 
+  //  Funcion que dada una cadena comprueba si es aceptada por el lenguaje que reconoce el autómata 
   public void checkString(String inputString) {
     printTitle();
     stringAccepted = false;
@@ -82,6 +57,7 @@ public class Automaton {
     }
   }
 
+  //  Función recursiva que sirve para transitar entre estados
   private void transit(String inputString, State currentState) {
     if (inputString.length() == 0) {
       if (stack.empty()) {
@@ -91,27 +67,22 @@ public class Automaton {
     if (stack.empty()) {
       return;
     }
-    //System.out.println(stack.peek().value);
     Vector<Map.Entry<State, Vector<Symbol>>> possibleTransitions = findTransitions(inputString, currentState);
     if (possibleTransitions.size() == 0) {
       return;
     }
-    //aqui debo hacer una foto de la pila;
     Stack<Symbol> stackSnapShot = new Stack<Symbol>();
     stackSnapShot.addAll(stack);
-    //LinkedList<Symbol> stackElementsCopy = stackElements;
-    //System.out.println(possibleTransitions);
     for (int i = 0; i < possibleTransitions.size(); i++) {
       stack.removeAllElements();
       stack.addAll(stackSnapShot);
-      //System.out.println(possibleTransitions.size());
       printTransition(inputString, possibleTransitions.get(i), currentState, stackSnapShot);
       executeTransition(inputString, possibleTransitions.get(i));
       if (stringAccepted == true) break;
     }
   }
 
-  //En este método falta que busque las entradas para .
+  //  Busca las transiciones posibles dado un estado, la cadena de entrada y el top de la pila
   private Vector<Map.Entry<State, Vector<Symbol>>> findTransitions(String inputString, State currentState) {
     Vector<Map.Entry<State, Vector<Symbol>>> possibleTransitions = new Vector<Map.Entry<State, Vector<Symbol>>>();
     Vector<Symbol> inputSymbols = new Vector<Symbol>();
@@ -131,7 +102,6 @@ public class Automaton {
     }
     if (inputString.length() > 0) {
       inputSymbols.set(0, new Symbol(String.valueOf(inputString.charAt(0))));    //Primer caracter de la cadena
-      //System.out.println("probando con " + String.valueOf(inputString.charAt(0)) + " " + stack.peek().value);
       Map.Entry<State, Vector<Symbol>> deltaMapKey = new AbstractMap.SimpleEntry<State, Vector<Symbol>>(currentState, inputSymbols);
       Set<Map.Entry<State, Vector<Symbol>>> destinationsSet = transitions.getTransitionsMap().get(deltaMapKey);
       if (destinationsSet != null) {
@@ -144,6 +114,7 @@ public class Automaton {
     return possibleTransitions;
   }
 
+  //  Ejecuta una transición dada, cambiando la configuración del autómata
   private void executeTransition(String inputString, Map.Entry<State, Vector<Symbol>> transition) {
     String newString = inputString;
     Vector<Symbol> stackSymbols = transition.getValue();
@@ -159,6 +130,7 @@ public class Automaton {
     transit(newString, transition.getKey());
   }
 
+  //  Imprime por consola la transición que se está llevando a cabo junto con la información del autómata
   private void printTransition(String inputString, Map.Entry<State, Vector<Symbol>> transition, State currentState, Stack<Symbol> stackSnapShot) {
     String consumedSymbol;
     if (inputString.length() > 0 && transition.getValue().get(transition.getValue().size() - 1).value != TRACE_SYMBOL) {
@@ -174,14 +146,34 @@ public class Automaton {
     System.out.print("\n");
   }
 
+  //  Imprime un título para la tabla
   private void printTitle() {
     System.out.printf(PRINT_PROPORTIONS + "\n", "estado", "simbolo consumido", "cadena", "top de la pila", "transición");
   }
 
+  // Comprueba si la definición del autómata es válida
   private Boolean validateAutomaton() {
     if (!states.contains(initialState)) return false;
     if (!stackAlphabet.getSymbols().contains(initialStackSymbol)) return false;
-    
+    for (Map.Entry<Map.Entry<State, Vector<Symbol>>, Set<Map.Entry<State, Vector<Symbol>>>> entry : 
+                                                        transitions.getTransitionsMap().entrySet()) {
+      Map.Entry<State, Vector<Symbol>> key = entry.getKey();
+      Set<Map.Entry<State, Vector<Symbol>>> value = entry.getValue();
+      if (!states.contains(key.getKey())) return false;
+      if (!key.getValue().get(0).value.equals(".") && !alphabet.getSymbols().contains(key.getValue().get(0))) return false;
+      if (!stackAlphabet.getSymbols().contains(key.getValue().get(1))) return false;
+      
+      Iterator<Map.Entry<State, Vector<Symbol>>> iter = value.iterator();
+      while (iter.hasNext()) {
+        Map.Entry<State, Vector<Symbol>> tmpEntry = iter.next();
+        if (!states.contains(tmpEntry.getKey())) return false;
+        for (int i = 0; i < tmpEntry.getValue().size(); i++) {
+          if (!tmpEntry.getValue().get(i).value.equals(".")
+              && !tmpEntry.getValue().get(i).value.equals("&")
+              && !stackAlphabet.getSymbols().contains(tmpEntry.getValue().get(i))) return false;
+        }
+      }                                                 
+    }
     return true; 
   }
 }

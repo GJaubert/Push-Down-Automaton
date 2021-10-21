@@ -1,12 +1,9 @@
 package source.main;
 
 import java.util.*;
-import source.main.Symbol;
-import source.main.State;
 
 public class Delta {
 
-  private final int LEFT_SIDE_TUPLE_SIZE = 3;
   private Map<Map.Entry<State, Vector<Symbol>>, Set<Map.Entry<State, Vector<Symbol>>>> transitionsMap;
 
   Delta(Vector<Vector<String>> inputTransitions) {
@@ -21,8 +18,7 @@ public class Delta {
       tmpVector.add(readStackSymbol);
       Map.Entry<State, Vector<Symbol>> tmpEntry = new AbstractMap.SimpleEntry<State, Vector<Symbol>>(tmpState, tmpVector);
 
-      //Right side of main hash entry
-
+      //  Right side of main hash entry
       State destinationState = new State(inputTransitions.get(i).get(3), false);
       Vector<Symbol> entryStackSymbols = new Vector<Symbol>();
       for (int j = 4; j < inputTransitions.get(i).size(); j++) {
@@ -31,7 +27,7 @@ public class Delta {
       }
       Map.Entry<State, Vector<Symbol>> rightSideEntry = new AbstractMap.SimpleEntry<State, Vector<Symbol>>(destinationState, entryStackSymbols);
 
-      //Creating and adding the main hash entry
+      //  Creating and adding the main hash entry
       if (transitionsMap.get(tmpEntry) == null) {   //No existe esta key
         Set<Map.Entry<State, Vector<Symbol>>> tmpSet = new HashSet<Map.Entry<State, Vector<Symbol>>>();
         tmpSet.add(rightSideEntry);
