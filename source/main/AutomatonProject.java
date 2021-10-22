@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class AutomatonProject {
   public static void main(String args[]) {
     try {
-      if (args == null) {
+      if (args.length == 0) {
         System.out.println("No ha especificado un fichero de entrada");
       }
       PdaReader reader = new PdaReader(args[0]);
